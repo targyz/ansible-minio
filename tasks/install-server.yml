@@ -26,7 +26,19 @@
   user:
     name: "{{ minio_user }}"
     group: "{{ minio_group }}"
-    shell: /bin/bash
+    system: yes
+    shell: "/sbin/nologin"
+    comment: "{{ minio_user }} nologin user"
+    home: "{{ minio_home_dir }}"
+    state: present
+
+- name: Create Minio binaries directory
+  file:
+    path: "{{ minio_home_dir }}/bin"
+    state: directory
+    owner: "{{ minio_user }}"
+    group: "{{ minio_group }}"
+    mode: 0755
 
 - name: Create the Minio data storage directories
   file:
@@ -42,8 +54,8 @@
   get_url:
     url: "{{ _minio_server_download_url }}"
     dest: "{{ minio_server_bin }}"
-    owner: "root"
-    group: "root"
+    owner: "{{ minio_user }}"
+    group: "{{ minio_group }}"
     mode: 0755
     checksum: "sha256:{{ _minio_server_checksum }}"
   register: _download_server
@@ -56,7 +68,7 @@
   template:
     src: minio.env.j2
     dest: "{{ minio_server_envfile }}"
-    owner: "root"
+    owner: "{{ minio_user }}"
     group: "{{ minio_group }}"
     mode: 0640
   notify: restart minio

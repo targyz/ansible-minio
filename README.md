@@ -19,8 +19,9 @@ None.
 Available variables are listed below, along with default values (see `defaults/main.yml`):
 
 ```yaml
-minio_server_bin: /usr/local/bin/minio
-minio_client_bin: /usr/local/bin/mc
+minio_home_dir: /opt/minio
+minio_server_bin: "{{ minio_home_dir }}/bin/minio"
+minio_client_bin: "{{ minio_home_dir }}/bin/minioc"
 ```
 
 Installation path of the Minio server and client binaries.
@@ -42,7 +43,7 @@ Name and group of the user running the minio server.
 **NB**: This role automatically creates the minio user and/or group if these does not exist in the system.
 
 ```yaml
-minio_server_envfile: /etc/default/minio
+minio_server_envfile: "{{ minio_home_dir }}/minio.env"
 ```
 
 Path to the file containing the minio server configuration ENV variables.
@@ -55,7 +56,7 @@ The Minio server listen address.
 
 ```yaml
 minio_server_datadirs:
-  - /var/lib/minio
+  - '/opt/minio/data'
 ```
 
 Directories of the folder containing the minio server data
@@ -124,9 +125,9 @@ None.
   hosts: all
   become: yes
   roles:
-    - { role: atosatto.minio }
+    - { role: ansible-minio }
   vars:
-    minio_server_datadirs: [ "/minio-test" ]
+    minio_server_datadirs: [ "/opt/minio/data" ]
 ```
 
 ## Changelog
